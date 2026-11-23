@@ -1,0 +1,37 @@
+name: Build LostCities-Paper JAR
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract source ZIP
+        run: unzip -o lostcities-paper-putaran-10.zip -d project
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: current
+
+      - name: Build plugin JAR
+        working-directory: project
+        run: gradle clean build
+
+      - name: Upload plugin JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: LostCities-Paper-JAR
+          path: project/build/libs/*.jar
