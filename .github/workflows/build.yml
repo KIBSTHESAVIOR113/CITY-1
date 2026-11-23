@@ -16,7 +16,9 @@ jobs:
         run: |
           unzip -o lostcities-paper-putaran-10.zip -d project
           python3 - << 'EOF'
+          import json
           from pathlib import Path
+
           def patch(path, old, new):
               p = Path(path)
               t = p.read_text(encoding="utf-8")
@@ -36,6 +38,21 @@ jobs:
           patch("project/src/test/java/mcjty/lostcities/paper/network/NetworkAndPersistenceTest.java",
                 'Files.writeString(tmp.resolve("highways.json"), "{"formatVersion": 2, "data": { TRUNCATED");',
                 'Files.writeString(tmp.resolve("highways.json"), "{\\"formatVersion\\": 2, \\"data\\": { TRUNCATED");')
+
+          cavern = Path("project/src/main/resources/profiles/cavern.json")
+          data = json.loads(cavern.read_text(encoding="utf-8"))
+          data.update({
+              "cityMinHeight": 40,
+              "cityLevel0Height": 44,
+              "cityLevel1Height": 52,
+              "cityLevel2Height": 60,
+              "cityLevel3Height": 68,
+              "cityLevel4Height": 76,
+              "cityLevel5Height": 82,
+              "cityLevel6Height": 90,
+              "cityLevel7Height": 98,
+          })
+          cavern.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
           EOF
 
       - name: Set up JDK 25
